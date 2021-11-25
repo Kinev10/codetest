@@ -1,5 +1,6 @@
 import sys
 
+
 class Domain:
     _words = []
     _stop_words = []
@@ -22,9 +23,47 @@ class Domain:
                 try:
                     self._minimum_count = int(args[3])
                 except:
-                    print("Require to input whole number")
+                    print("Require to input whole number.")
                     sys.exit(1)
 
+            # print result
+            for word in self.frequency_sorter(self.stop_words_removed_remove_minimum_count):
+                print(word[0], word[1])
+
+    def frequency_sorter(self, frequency):
+        return sorted(frequency.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
+
+    @property
+    def stop_words_removed_remove_minimum_count(self):
+        return self.remove_minimum_count(self.stop_words_removed)
+
+    def remove_minimum_count(self, frequency):
+        if self._minimum_count > 0:
+            return {key: value for key, value in frequency.items() if value > self._minimum_count}
+        return frequency
+
+    @property
+    def stop_words_removed(self):
+        if self._stop_words:
+            new_frequency = self.frequency
+            for word in self._stop_words:
+                del new_frequency[word]
+            return new_frequency
+        return self.frequency
+
+    @property
+    def frequency(self):
+        frequency = {}
+        for word in self._words:
+            if word[-1] == '.':
+                word = word[0:len(word) - 1]
+
+            word = word.lower()
+            if word in frequency:
+                frequency[word] += 1
+            else:
+                frequency.update({word: 1})
+        return frequency
 
     def read_and_parse(self, file_name):
         try:
@@ -33,10 +72,6 @@ class Domain:
         except FileNotFoundError:
             print(f'{file_name} not found.')
             sys.exit(1)
-
-    def s(self):
-        return 21
-        # return file_name
 
 
 if __name__ == '__main__':
