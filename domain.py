@@ -1,6 +1,5 @@
 import sys
 
-
 class Domain:
     _words = []
     _stop_words = []
@@ -15,20 +14,23 @@ class Domain:
             print("Too many parameters.")
         else:
             self._words = self.read_and_parse(args[1])
-            try:
-                self._minimum_count = int(args[2])
-            except ValueError:
-                self._stop_words = self.read_and_parse(args[2])
-            if arg_len == 4:
+            if arg_len > 2:
                 try:
-                    self._minimum_count = int(args[3])
-                except:
-                    print("Require to input whole number.")
-                    sys.exit(1)
+                    self._minimum_count = int(args[2])
+                except ValueError:
+                    self._stop_words = self.read_and_parse(args[2])
+                if arg_len == 4:
+                    try:
+                        self._minimum_count = int(args[3])
+                    except:
+                        print("Require to input whole number.")
+                        sys.exit(1)
 
-            # print result
-            for word in self.frequency_sorter(self.stop_words_removed_remove_minimum_count):
-                print(word[0], word[1])
+            self.frequency_outputter(self.frequency_sorter(self.stop_words_removed_remove_minimum_count))
+
+    def frequency_outputter(self,frequency):        
+        for word in frequency:
+            print(word[0], word[1])
 
     def frequency_sorter(self, frequency):
         return sorted(frequency.items(), key=lambda kv: (kv[1], kv[0]), reverse=True)
